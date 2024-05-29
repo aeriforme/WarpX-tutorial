@@ -1,0 +1,125 @@
+#################
+#### MY CONSTANTS
+#################
+my_constants.micro = 1e-6
+my_constants.femto = 1e-15
+my_constants.eV = q_e 
+my_constants.Lz = 40*micro
+my_constants.Lx = 40*micro
+my_constants.nz = 1024
+my_constants.nx = 1024
+my_constants.dx = Lx / nx 
+my_constants.dz = Lz / nz
+my_constants.FWHM_I = 25*femto
+my_constants.laser_tpeak = 50*femto
+my_constants.laser_waist = 3.*micro
+my_constants.laser_wavelength = 0.8*micro
+my_constants.a0 = 20 
+my_constants.n_c = epsilon0 * m_e * (2*pi*clight)**2 /(laser_wavelength*q_e)**2 
+my_constants.ne0 = 40*n_c 
+my_constants.Te0 = 10*eV
+my_constants.zmin_targ = 2*FWHM_I*clight
+my_constants.thick_targ = 1*micro
+my_constants.thick_cont = 0.04*micro
+
+#############
+#### NUMERICS
+#############
+amr.max_level = 0
+algo.particle_shape = 3
+algo.maxwell_solver = yee
+algo.particle_pusher = boris
+algo.current_deposition = esirkepov 
+warpx.use_filter = 1
+
+#########################
+#### SPACE DISCRETIZATION
+#########################
+geometry.dims = 2
+geometry.prob_lo = -0.5*Lx  0
+geometry.prob_hi =  0.5*Lx  Lz
+amr.n_cell = nx nz 
+
+########################
+#### TIME DISCRETIZATION
+########################
+stop_time = 2*Lz/clight
+warpx.cfl = 0.999
+
+########################
+#### BOUNDARY CONDITIONS
+########################
+boundary.field_lo = pml pml
+boundary.field_hi = pml pml
+
+##############
+#### PARTICLES
+##############
+particles.species_names = ion_targ ele_targ ion_cont ele_cont
+
+ion_targ.species_type = boron10
+ion_targ.injection_style = NUniformPerCell
+ion_targ.num_particles_per_cell_each_dim = 5 4
+ion_targ.momentum_distribution_type = at_rest
+ion_targ.zmin = zmin_targ
+ion_targ.zmax = zmin_targ + thick_targ 
+ion_targ.profile = constant
+ion_targ.density = 5*ne0
+
+ele_targ.species_type = electron
+ele_targ.injection_style = NUniformPerCell
+ele_targ.num_particles_per_cell_each_dim = 10 4 
+ele_targ.momentum_distribution_type = maxwell_boltzmann
+ele_targ.theta = Te0 / (m_e*clight**2)
+ele_targ.zmin = zmin_targ
+ele_targ.zmax = zmin_targ + thick_targ 
+ele_targ.profile = constant
+ele_targ.density = ne0
+
+ion_cont.species_type = proton
+ion_cont.injection_style = NUniformPerCell
+ion_cont.num_particles_per_cell_each_dim = 10 10 
+ion_cont.momentum_distribution_type = at_rest
+ion_cont.zmin = zmin_targ + thick_targ 
+ion_cont.zmax =  zmin_targ + thick_targ + thick_cont
+ion_cont.profile = constant
+ion_cont.density = 5*n_c
+
+ele_cont.species_type = electron
+ele_cont.injection_style = NUniformPerCell
+ele_cont.num_particles_per_cell_each_dim = 10 5
+ele_cont.momentum_distribution_type = maxwell_boltzmann
+ele_cont.theta = Te0 / (m_e*clight**2)
+ele_cont.zmin = zmin_targ + thick_targ 
+ele_cont.zmax = zmin_targ + thick_targ + thick_cont
+ele_cont.profile = constant
+ele_cont.density = 5*n_c
+
+##########
+#### LASER
+##########
+lasers.names        = laser1
+laser1.position     = 0 0 dz
+laser1.direction    = 0. 0. 1.         
+laser1.polarization = 1. 0. 0.         
+laser1.a0           = a0 
+laser1.wavelength   = laser_wavelength 
+laser1.profile      = Gaussian
+laser1.profile_waist = laser_waist 
+laser1.profile_duration = FWHM_I/1.17741
+laser1.profile_t_peak = laser_tpeak 
+laser1.profile_focal_distance = zmin_targ
+
+################
+#### DIAGNOSTICS
+################
+diagnostics.diags_names = diag1
+
+diag1.diag_type = Full
+diag1.fields_to_plot = none
+diag1.format = openpmd
+diag1.intervals = 10 
+diag1.openpmd_backend = h5
+diag1.write_species = 1
+diag1.species = ele_targ ion_cont 
+diag1.fields_to_plot = Ex rho_ele_targ rho_ion_targ rho_ele_cont rho_ion_cont 

@@ -1,8 +1,7 @@
 import os
 import numpy as np 
 import matplotlib.pyplot as plt 
-from matplotlib import use 
-from matplotlib import rcParams 
+from matplotlib import use, rcParams 
 
 from openpmd_viewer import OpenPMDTimeSeries
 
