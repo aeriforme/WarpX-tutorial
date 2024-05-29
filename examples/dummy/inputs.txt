@@ -21,11 +21,6 @@ geometry.prob_lo = -0.5*Lx -0.5*Ly -0.5*Lz # meters
 geometry.prob_hi =  0.5*Lx  0.5*Ly  0.5*Lz # meters
 amr.n_cell = 32 32 32
 
-#########################
-#### DOMAIN DECOMPOSITION
-#########################
-warpx.numprocs = 1 1 1 # annoying to keep here!
-
 ########################
 #### TIME DISCRETIZATION
 ########################
