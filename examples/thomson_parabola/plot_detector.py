@@ -65,7 +65,6 @@ for s in range(N_species):
 fig.colorbar(im, label='E [MeV]')        
 ax.set_xlabel('x [m]')
 ax.set_ylabel('y [m]')
-ax.set_aspect('equal')
 
 plt.tight_layout()
 fig.savefig(f'screen.png', dpi=300)
